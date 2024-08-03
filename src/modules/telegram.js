@@ -24,6 +24,7 @@ export default class TelegramModule {
         /**
          * @todo bot loading seems asynchronous. needs to be handled properly.
          */
+        this.isDebug = Config.getConfig().debug
         this.mconfig = Config.getConfig().modules.telegram;
 
         if (!this.mconfig.use)
@@ -123,13 +124,23 @@ export default class TelegramModule {
                 result += `[${actor.id}] [yt-play] ${actor.name} played ${videoLink}`;
                 break;
             case 'esoDisconnected':
-                result += `DISCONNECT`;
-                break;
+                if (this.isDebug){
+                    result += `DISCONNECT`;
+                    break;
+                }
             default:
-                console.warn(`unknown event code: ${code}`);
-                result += `[no data] [${code}]`;
+                if (this.isDebug){
+                    console.warn(`unknown event code: ${code}`);
+                    result += `[no data] [${code}]`;
+                }
         }
         console.log(`[${hour}:${min}] received event '${code}'`);
-        this.bot.sendMessage(this.mconfig.chatId, decode(result));
+        if (this.isDebug){
+            this.bot.sendMessage(this.mconfig.chatId, decode(result));
+        }
+        else if (actor.name != this.mconfig.owner_eso_nickname){
+            console.log(actor.name, this.mconfig.owner_eso_nickname)
+            this.bot.sendMessage(this.mconfig.chatId, decode(result));
+        };
     }
 }

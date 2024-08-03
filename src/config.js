@@ -15,7 +15,8 @@ export default class Config {
         telegram: {
             use: false,
             token: '',
-            chatId: 0
+            chatId: 0,
+            owner_eso_nickname: '"man_slayer1488"'
         }
     };
 
